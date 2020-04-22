@@ -7,7 +7,12 @@ namespace CourseLab
 	{
 		glGenBuffers(1, &m_vertexID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexID);
-		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, size, data,
+#if BATCH_RENDERING
+			GL_DYNAMIC_DRAW);
+#else
+			GL_STATIC_DRAW);
+#endif
 	}
 	VertexBuffer::~VertexBuffer() {
 		glDeleteBuffers(1, &m_vertexID);
@@ -29,7 +34,12 @@ namespace CourseLab
 	{
 		glGenBuffers(1, &m_indexID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count, data, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count, data,
+#if BATCH_RENDERING
+			GL_DYNAMIC_DRAW);
+#else
+			GL_STATIC_DRAW);
+#endif
 	}
 	IndexBuffer::~IndexBuffer() {
 		glDeleteBuffers(1, &m_indexID);

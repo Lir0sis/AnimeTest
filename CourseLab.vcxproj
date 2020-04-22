@@ -99,10 +99,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);DEBUG;OBJL_CONSOLE_OUTPUT</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>user32.lib;gdi32.lib;shell32.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:library %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -111,10 +113,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);DEBUG;OBJL_CONSOLE_OUTPUT</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>user32.lib;gdi32.lib;shell32.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:library %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -131,6 +135,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>user32.lib;gdi32.lib;shell32.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:library %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,6 +153,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <AdditionalDependencies>user32.lib;gdi32.lib;shell32.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:library %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -159,6 +165,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glad\glad.c" />
+    <ClCompile Include="include\imGui\imgui.cpp" />
+    <ClCompile Include="include\imGui\imgui_demo.cpp" />
+    <ClCompile Include="include\imGui\imgui_draw.cpp" />
+    <ClCompile Include="include\imGui\imgui_widgets.cpp" />
+    <ClCompile Include="include\imGui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="include\imGui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="include\objLoader.cpp" />
+    <ClCompile Include="include\objLoader.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\buffer.cpp" />
     <ClCompile Include="src\shader.cpp" />
@@ -169,7 +183,26 @@
     <ClInclude Include="include\glad\glad.h" />
     <ClInclude Include="include\GLFW\glfw3.h" />
     <ClInclude Include="include\GLFW\glfw3native.h" />
+    <ClInclude Include="include\glm\glm.hpp" />
+    <ClInclude Include="include\glm\gtc\matrix_transform.hpp" />
+    <ClInclude Include="include\glm\gtc\type_ptr.hpp" />
+    <ClInclude Include="include\glm\matrix.hpp" />
+    <ClInclude Include="include\imGui\imconfig.h" />
+    <ClInclude Include="include\imGui\imgui.h" />
+    <ClInclude Include="include\imGui\imgui_internal.h" />
+    <ClInclude Include="include\imGui\imgui_impl_glfw.h" />
+    <ClInclude Include="include\imGui\imgui_impl_opengl3.h" />
+    <ClInclude Include="include\imGui\imstb_rectpack.h" />
+    <ClInclude Include="include\imGui\imstb_textedit.h" />
+    <ClInclude Include="include\imGui\imstb_truetype.h" />
     <ClInclude Include="src\buffer.h" />
+    <ClInclude Include="src\callbacks.h" />
+    <ClInclude Include="src\dataProcessing\fileObject.h" />
+    <ClInclude Include="src\dataProcessing\parser.h" />
+    <ClInclude Include="src\dataStructs\texture.h" />
+    <ClInclude Include="src\renderer.h" />
+    <ClInclude Include="src\scene.h" />
+    <ClInclude Include="src\objects.h" />
     <ClInclude Include="src\layout.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\vertexArray.h" />

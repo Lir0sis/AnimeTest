@@ -1,21 +1,19 @@
 #version 330 core
 
-//uniform mat4 locals;
-//uniform mat4 globals;
-//uniform mat4 view;
-//uniform mat4 proj;
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in vec2 aTexture;
+layout(location = 2) in vec3 aNormal;
 
-layout(location = 0) in vec2 position;
-layout(location = 1) in vec3 color;
-//layout(location = 2) in vec2 aTexCoord;
+uniform mat4 uModel;
+uniform mat4 uTransform;
 
-out vec3 Color;
-//out vec2 TexCoord;
+out vec3 FragPos;
+out vec3 Normal;
 
 void main()
 {
-	Color = color;
-	gl_Position = vec4(position, 0.0f, 1.0f);
-	//TexCoord = aTexCoord;
-	//gl_Position = proj * view * globals * locals * vec4(position, 1.0);
+	FragPos = vec3(uModel * vec4(aPos, 1.0));
+	Normal = mat3(transpose(inverse(uModel))) * aNormal;
+
+	gl_Position = uTransform * vec4(FragPos, 1.0);
 }

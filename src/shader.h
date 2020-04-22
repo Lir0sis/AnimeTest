@@ -24,6 +24,8 @@ namespace CourseLab
 		ShaderSource ReadShader(const std::string& dirpath);
 		void CreateShaders(std::string& dirpath);
 
+		const GLuint ID() const { return m_ProgramID; }
+
 		void Bind() const;
 		void Unbind() const;
 	};

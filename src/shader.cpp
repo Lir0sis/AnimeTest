@@ -9,23 +9,23 @@ namespace CourseLab
 	}
 	ShaderProgram::~ShaderProgram() 
 	{
-		glDeleteProgram(m_ProgramID);
+		GLCall(glDeleteProgram(m_ProgramID));
 	}
 
 	void ShaderProgram::CreateShaders(std::string& dirpath)
 	{
-		if (!m_ProgramID) m_ProgramID = glCreateProgram();
+		if (!m_ProgramID) { GLCall(m_ProgramID = glCreateProgram();) }
 
 		ShaderSource ss = ReadShader(path);
 		GLuint vertex = CompileShader(GL_VERTEX_SHADER, ss.vertexSrc),
 			fragment = CompileShader(GL_FRAGMENT_SHADER, ss.fragmentSrc);
 
-		glAttachShader(m_ProgramID, vertex);
-		glAttachShader(m_ProgramID, fragment);
-		glLinkProgram(m_ProgramID);
+		GLCall(glAttachShader(m_ProgramID, vertex));
+		GLCall(glAttachShader(m_ProgramID, fragment));
+		GLCall(glLinkProgram(m_ProgramID));
 
 		GLint success;
-		glGetProgramiv(m_ProgramID, GL_LINK_STATUS, &success);
+		GLCall(glGetProgramiv(m_ProgramID, GL_LINK_STATUS, &success));
 		if (!success)
 		{
 			GLchar infoLog[512];
@@ -33,24 +33,24 @@ namespace CourseLab
 			std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 		}
 
-		glDeleteShader(vertex);
-		glDeleteShader(fragment);
+		GLCall(glDeleteShader(vertex));
+		GLCall(glDeleteShader(fragment));
 
 	}
 
 	GLuint ShaderProgram::CompileShader(GLuint type, const std::string& src)
 	{
-		GLuint shaderID = glCreateShader(type);
+		GLCall(GLuint shaderID = glCreateShader(type));
 		const GLchar* source = src.c_str();
-		glShaderSource(shaderID, 1, &source, nullptr);
-		glCompileShader(shaderID);
+		GLCall(glShaderSource(shaderID, 1, &source, nullptr));
+		GLCall(glCompileShader(shaderID));
 
-		GLint status; glGetShaderiv(shaderID, GL_COMPILE_STATUS, &status);
+		GLint status; GLCall(glGetShaderiv(shaderID, GL_COMPILE_STATUS, &status));
 
 		if (status != GL_TRUE) {
 
 			GLchar infoLog[512];
-			glGetShaderInfoLog(shaderID, 512, NULL, infoLog);
+			GLCall(glGetShaderInfoLog(shaderID, 512, NULL, infoLog));
 			std::cout << infoLog;
 
 			//throw std::runtime_error("We've fucked up...");
@@ -61,7 +61,7 @@ namespace CourseLab
 
 	void ShaderProgram::Bind() const
 	{
-		glUseProgram(m_ProgramID);
+		GLCall(glUseProgram(m_ProgramID));
 	}
 
 	void ShaderProgram::Unbind() const 
