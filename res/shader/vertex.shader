@@ -9,9 +9,11 @@ uniform mat4 uTransform;
 
 out vec3 FragPos;
 out vec3 Normal;
+out vec2 TexCoords;
 
 void main()
 {
+	TexCoords = aTexture;
 	FragPos = vec3(uModel * vec4(aPos, 1.0));
 	Normal = mat3(transpose(inverse(uModel))) * aNormal;
 

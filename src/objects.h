@@ -81,7 +81,7 @@ namespace CourseLab
 
 		inline void Translate(const glm::vec3& pos) { m_pos += pos; }
 		inline void Rotate(const glm::vec3& rot) { m_rot += rot; }
-		inline void Scale(const glm::vec3& scale) { m_rot *= scale; }
+		inline void Scale(const glm::vec3& scale) { m_scale *= scale; }
 
 	};
 
@@ -99,7 +99,7 @@ namespace CourseLab
 		Texture* texture;
 		
 	public:
-		Model(File* texture, const std::string& path) : texture(nullptr)
+		Model(const std::string& path) : texture(nullptr)
 		{
 			//this->texture = new Texture(texture);
 			data = new objl::Loader();
@@ -115,7 +115,7 @@ namespace CourseLab
 		~Model() 
 		{
 			delete data;
-			delete texture;
+			//delete texture;
 		};
 
 		void Draw(GLuint shaderID, glm::mat4 transform) override
@@ -164,10 +164,52 @@ namespace CourseLab
 		}
 	};
 
-	class LightSource 
+	class LightSource : public Object, public virtual Transform
 	{
-	private:
-
 	public:
+		struct LightParams 
+		{
+			LightParams() { ambient = 1; diffuse = 1; specular = 1; }
+			LightParams(float ambient, float diffuse, float specular)
+			{
+				this->ambient = ambient;
+				this->diffuse = diffuse;
+				this->specular= specular;
+			}
+
+			float ambient;
+			float diffuse;
+			float specular;
+		};
+
+	private:
+		glm::vec3 m_Color;
+		LightParams params;
+	public:
+		LightSource(float ambient, float diffuse, float specular, 
+			glm::vec3 color = glm::vec3(1.0f)) : m_Color(glm::vec3(color))
+		{
+			params = LightParams(ambient, diffuse, specular);
+		}
+		LightSource(LightParams params, glm::vec3 color = glm::vec3(1.0f)) : m_Color(color)
+		{
+			this->params = params;
+		}
+		~LightSource() {}
+
+		void SetColor(glm::vec3 color) 
+		{
+			m_Color = color;
+		}
+
+		void SendData(GLint shaderID,glm::vec3 eyePos) 
+		{
+			GLCall(glUniform3fv(glGetUniformLocation(shaderID, "light.position"), 1, glm::value_ptr(Pos())));
+			GLCall(glUniform3fv(glGetUniformLocation(shaderID, "light.viewPos"), 1, glm::value_ptr(eyePos)));
+			GLCall(glUniform3fv(glGetUniformLocation(shaderID, "light.ambient"), 1, glm::value_ptr(m_Color * params.ambient)));
+			GLCall(glUniform3fv(glGetUniformLocation(shaderID, "light.diffuse"), 1, glm::value_ptr(m_Color * params.diffuse)));
+			GLCall(glUniform3fv(glGetUniformLocation(shaderID, "light.specular"), 1, glm::value_ptr(m_Color * params.specular)));
+
+		}
 	};
 }
