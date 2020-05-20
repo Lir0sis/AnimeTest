@@ -8,25 +8,33 @@ namespace CourseLab
 	class Scene 
 	{
 	private:
-		std::vector<Object*> objects;
+		std::vector<Model*> objects;
 		Camera* activeCamera;
+		LightSource* lightSrc;
 	public:
-		Scene() : activeCamera(nullptr) {}
+		Scene(LightSource* light) : activeCamera(nullptr), lightSrc(light) {}
 		~Scene() {}
 
-		void AddObj(Object* obj) 
-		{
+		void AddObj(Model* obj) {
 			objects.push_back(obj);
 		}
 
-		Camera* GetCamera() 
-		{
+		Camera* GetCamera() {
 			return activeCamera;
 		}
-		
-		void DrawScene() 
-		{
 
+		void SetCamera(Camera* cam) {
+			activeCamera = cam;
+		}
+		
+		void DrawScene(GLuint shaderID) 
+		{
+			lightSrc->SendData(shaderID, activeCamera->Pos());
+
+			for (auto& obj : objects) 
+			{
+				obj->Draw(shaderID, activeCamera->GetCamMatrix());
+			}
 		}
 	};
 }

@@ -18,7 +18,6 @@
     <None Include=".gitignore" />
     <None Include="LICENSE" />
     <None Include="README.md" />
-    <None Include="res\shader\fragment.shader" />
     <None Include="res\shader\vertex.shader" />
     <None Include="res\shader\fragment.shader" />
     <None Include="res\shader\vertex.shader" />
@@ -50,6 +49,8 @@
     </None>
     <None Include="include\assimp\config.h.in" />
     <None Include="include\assimp\.editorconfig" />
+    <None Include="res\shader\fragment2.shader" />
+    <None Include="res\shader\fragment.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -94,6 +95,9 @@
     <ClCompile Include="include\imGui\imgui_impl_opengl3.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\stb_image.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -127,12 +131,6 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="src\objects.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="src\dataProcessing\parser.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="src\dataProcessing\fileObject.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\glm\glm.hpp">
@@ -181,9 +179,6 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\stb_image.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="src\dataStructs\texture.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\assimp\Compiler\poppack1.h">
@@ -414,10 +409,12 @@
     <ClInclude Include="include\assimp\ZipArchiveIOSystem.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="include\assimp\config.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw3.lib" />
-    <Library Include="C:\Users\Valentine\Desktop\GOVNO SEKOE\build\code\Release\assimp-vc142-mt.lib" />
     <Library Include="lib\assimp-vc142-mt.lib" />
   </ItemGroup>
 </Project>

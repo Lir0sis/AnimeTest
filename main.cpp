@@ -3,6 +3,8 @@
 #include "src/shader.h"
 #include "src/vertexArray.h"
 #include "src/objects.h"
+#include "src/scene.h"
+#include <../main.h>
 
 #include <assimp/Importer.hpp>
 
@@ -11,28 +13,45 @@
 #include <imGui/imgui_impl_glfw.h>
 
 #define PI_CONST 3.1415926f
-
-GLint wWidth = 1024, wHeight = 768;
-
 const char *glsl_version = "#version 330";
 
 #define BATCH_BUFFER_SIZE 0; // The last thing to do
 
 void processInput(GLFWwindow* window, CourseLab::Camera& cam, float time);
 
-int main(char* arv[], int argc) 
+int main(char* arv[], int argc)
 {
-	auto window = std::make_shared<CourseLab::AppWindow>(wWidth, wHeight);
+	auto window = std::make_shared<CourseLab::AppWindow>(1024, 768);
+	auto default_texture = CourseLab::Model::TextureFromFile("default_texture.jpg", "res/default", false);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, default_texture);
 
 	CourseLab::ShaderProgram program("res/shader");
-	CourseLab::Model model("C:/Users/Valentine/Desktop/models/narancha/0.obj");
-	CourseLab::Camera cam(glm::vec3(0.0f, 0.25f, 3.0f));
-	CourseLab::LightSource light(0.7f, 0.2f, 1.0f, glm::vec3(1.0f));
 
-	model.Translate(glm::vec3(0.0f, -0.75f, 0.0f));
-	model.Size(glm::vec3(1.0f));
+	auto light = new CourseLab::LightSource(0.6f, 0.2f, 1.0f, glm::vec3(1.0f));
+	light->Pos(glm::vec3(1.0f, 2.0f, 0.0f));
+	CourseLab::Scene scene(light);
+	scene.SetCamera(new CourseLab::Camera(glm::vec3(0.0f, 0.25f, 3.0f), glm::vec3(0.0f,0.0f,0.0f), window.get(),45.0f));
 
-	light.Pos(glm::vec3(4.0f, 3.0f, 0.0f));
+	auto model2 = new CourseLab::Model("C:/Users/Valentine/Desktop/models/nanosuit/nanosuit.obj");
+	auto model1 = new CourseLab::Model("C:/Users/Valentine/Desktop/models/thin matrix/model.dae");
+	auto model3 = new CourseLab::Model("C:/Users/Valentine/Desktop/models/Denis/rp_dennis_posed_004_100k.obj");
+
+	model3->Pos(glm::vec3(0.0f, -3.0f, 0.0f));
+	model3->Size(glm::vec3(0.025f));
+	model3->Rot(glm::vec3(0.0f, glm::radians(-90.0f), 0.0f));
+
+	model1->Rot(glm::vec3(glm::radians(-90.0f),0.0f,0.0f));
+	model1->Size(glm::vec3(0.3f));
+	model1->Pos(glm::vec3(-2.0f, -3.0f, 0.0f));
+
+	model2->Size(glm::vec3(0.3f));
+	model2->Pos(glm::vec3(2.0f, -3.0f, 0.0f));
+
+	scene.AddObj(model1);
+	scene.AddObj(model2);
+	scene.AddObj(model3);
+	//GUI Init
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -43,16 +62,12 @@ int main(char* arv[], int argc)
 	ImGui_ImplGlfw_InitForOpenGL(window->glWindow, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
-	glEnable(GL_DEPTH_TEST);
-
-	glPolygonMode(GL_FRONT, GL_FILL);
-	glPolygonMode(GL_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT, GL_FILL);
+	//glPolygonMode(GL_BACK, GL_LINE);
+	glClearColor(0.7f, 0.7f, 0.8f, 1);
 
 	bool show_demo_window = true;
 	float i = 0;
-	glm::vec3 pos(0.0f);
-	glm::vec3 rot(0.0f);
-	glm::vec4 color(1.0f);
 	while (!window->shouldClose())
 	{
 		glfwPollEvents();
@@ -61,37 +76,21 @@ int main(char* arv[], int argc)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::ColorEdit4("Color", glm::value_ptr(color));
+		//ImGui::ColorEdit4("Color", glm::value_ptr(color));
 
-		ImGui::SliderFloat("posX", &pos.x, -4.0f, 4.0f);
-		ImGui::SliderFloat("posY", &pos.y, -4.0f, 4.0f);
-		ImGui::SliderFloat("posZ", &pos.z, -4.0f, 4.0f);
-		ImGui::SliderFloat("rotX", &rot.x, -4.0f, 4.0f);
-		ImGui::SliderFloat("rotY", &rot.y, -4.0f, 4.0f);
-		ImGui::SliderFloat("rotZ", &rot.z, -4.0f, 4.0f);
+		ImGui::ShowDemoWindow(&show_demo_window);
 
-		//ImGui::ShowDemoWindow(&show_demo_window);
-
-		i += 0.01f;
+		i += 0.1f;
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 		// Updating Data
 
-		glfwGetFramebufferSize(window->glWindow, &wWidth, &wHeight);
-		glm::mat4 proj = glm::perspective(45.0f, (float)wWidth / (float)wHeight, 0.1f, 100.0f);
-		light.Pos(glm::vec3(2.0f * cosf(i * 2), 1.0f, 2.0f * sinf(i * 2)));
-		cam.Pos(glm::vec3(2.0f * cosf(i / 2), 1.0f, 2.0f * sinf(i / 2)));
-		light.SetColor(glm::vec3(color));
-		model.Pos(pos);
-		model.Rot(rot);
-
-		/*glm::vec3(0.8f + 0.2f * cosf(i * 2), 0.9f + 0.1f * sin(i), 0.8f + 0.2f * sinf(i * 2))*/
+		scene.GetCamera()->Pos(glm::vec3(5.0f * cosf(i / 4), 1.0f, 5.0f * sinf(i / 4)));
 
 		//Rendering
 
 		program.Bind();
-		light.SendData(program.ID(), cam.Pos());
-		model.Draw(program.ID(), proj * cam.GetViewMatrix());
+		scene.DrawScene(program.ID());
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

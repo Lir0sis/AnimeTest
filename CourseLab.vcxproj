@@ -172,6 +172,7 @@
     <None Include="lib\assimp-vc142-mt.exp" />
     <None Include="LICENSE" />
     <None Include="README.md" />
+    <None Include="res\shader\fragment2.shader" />
     <None Include="res\shader\fragment.shader" />
     <None Include="res\shader\vertex.shader" />
   </ItemGroup>
@@ -188,6 +189,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\buffer.cpp" />
     <ClCompile Include="src\shader.cpp" />
+    <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="src\vertexArray.cpp" />
     <ClCompile Include="src\window.cpp" />
   </ItemGroup>
@@ -207,6 +209,7 @@
     <ClInclude Include="include\assimp\Compiler\poppack1.h" />
     <ClInclude Include="include\assimp\Compiler\pstdint.h" />
     <ClInclude Include="include\assimp\Compiler\pushpack1.h" />
+    <ClInclude Include="include\assimp\config.h" />
     <ClInclude Include="include\assimp\CreateAnimMesh.h" />
     <ClInclude Include="include\assimp\DefaultIOStream.h" />
     <ClInclude Include="include\assimp\DefaultIOSystem.h" />
@@ -286,9 +289,6 @@
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="src\buffer.h" />
     <ClInclude Include="src\callbacks.h" />
-    <ClInclude Include="src\dataProcessing\fileObject.h" />
-    <ClInclude Include="src\dataProcessing\parser.h" />
-    <ClInclude Include="src\dataStructs\texture.h" />
     <ClInclude Include="src\renderer.h" />
     <ClInclude Include="src\scene.h" />
     <ClInclude Include="src\objects.h" />
@@ -300,7 +300,6 @@
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="C:\Users\Valentine\Desktop\GOVNO SEKOE\build\code\Release\assimp-vc142-mt.lib" />
     <Library Include="lib\assimp-vc142-mt.lib" />
     <Library Include="lib\glfw3.lib" />
   </ItemGroup>

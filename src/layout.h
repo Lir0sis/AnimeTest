@@ -32,7 +32,7 @@ namespace CourseLab
 			PushAttrib({ 3, GL_FLOAT, false }); 
 		}
 
-		inline int GetSize() { return m_elements.size(); }
+		inline GLuint GetSize() { return (GLuint)m_elements.size(); }
 
 		inline const std::vector<LayoutAttrib>& GetElements() const { return m_elements; }
 		inline int GetStride() const { return m_stride; }

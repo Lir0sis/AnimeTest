@@ -20,8 +20,8 @@ namespace CourseLab
 		const IndexBuffer* ibo;
 		GLuint GetID();
 
-		void BindBuffers(const IndexBuffer* indecies, const VertexBuffer* vertices) { vbo = vertices; ibo = indecies; }
-		void AddLayout(const VertexLayout& layout) { layoutInited = false; m_layout = layout; }
+		inline void BindBuffers(const IndexBuffer* indecies, const VertexBuffer* vertices) { vbo = vertices; ibo = indecies; }
+		inline void AddLayout(const VertexLayout& layout) { layoutInited = false; m_layout = layout; }
 		void ActivateLayout();
 		void Bind() const;
 		void Unbind() const;

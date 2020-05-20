@@ -7,17 +7,22 @@ namespace CourseLab
 
 	class AppWindow 
 	{ 
-
 	private:
 		GLint width, height;
 
 	public:
+		GLFWwindow* glWindow;
+
 		AppWindow(GLint width, GLint height);
 		~AppWindow();
-
-		GLFWwindow* glWindow;
 		
 		int shouldClose() const;
+
+		void GetSize(GLint &width, GLint &height) {
+			glfwGetFramebufferSize(glWindow, &this->width, &this->height);
+			height = this->height;
+			width = this->width;
+		}
 	};
 
 }

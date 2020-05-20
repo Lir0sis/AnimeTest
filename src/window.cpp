@@ -28,6 +28,7 @@ namespace CourseLab
 			throw std::runtime_error("Failed to initialize OpenGL context");
 
 		GLCall(glViewport(0, 0, width, height));
+		GLCall(glEnable(GL_DEPTH_TEST));
 	}
 
 	AppWindow::~AppWindow() 
