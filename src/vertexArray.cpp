@@ -22,12 +22,35 @@ namespace CourseLab
 
 			for (int i = 0; i < elements.size(); i++)
 			{
-				GLCall(glEnableVertexAttribArray(i));
-				GLCall(glVertexAttribPointer(i, elements[i].count, elements[i].type,
-					elements[i].normalized ? GL_TRUE : GL_FALSE,
-					stride * sizeof(GLfloat), (const void*)(offset * sizeof(GLfloat))));
+				size_t value;
 
-				offset += elements[i].count;
+				switch (elements[i].type) {
+				case GL_INT:
+					value = sizeof(GLint);
+					break;
+				case GL_FLOAT:
+					value = sizeof(GLfloat);
+					break;
+				case GL_UNSIGNED_INT:
+					value = sizeof(GLuint);
+					break;
+				}
+
+
+				GLCall(glEnableVertexAttribArray(i));
+				if (elements[i].type == GL_INT)
+				{
+					GLCall(glVertexAttribIPointer(i, elements[i].count, elements[i].type,
+						stride * value, (const void*)(offset)));
+				}
+				else
+				{
+					GLCall(glVertexAttribPointer(i, elements[i].count, elements[i].type,
+						elements[i].normalized ? GL_TRUE : GL_FALSE,
+						stride * value, (const void*)(offset)));
+				}
+
+				offset += elements[i].count * value;
 			}
 		layoutInited = true;
 		}

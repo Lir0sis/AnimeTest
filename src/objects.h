@@ -22,6 +22,16 @@ namespace CourseLab
 			glm::vec3 Bitangent;
 			glm::ivec4 BoneIDs;
 			glm::vec4 Weights;
+
+			Vertex() {
+				Position = glm::vec3(0.0f);
+				Normal = glm::vec3(0.0f);
+				TexCoords = glm::vec2(0.0f);
+				Tangent = glm::vec3(0.0f);
+				Bitangent = glm::vec3(0.0f);
+				BoneIDs = glm::ivec4(0.0f);
+				Weights = glm::vec4(0.0f);
+			}
 		};
 		struct Texture {
 			GLuint id;
@@ -35,7 +45,7 @@ namespace CourseLab
 		std::vector<Texture> textures;
 		VertexArray* vao;
 	public:
-		ModelMesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
+		ModelMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const std::vector<Texture>& textures)
 		{
 			this->vertices = vertices;
 			this->indices = indices;
@@ -90,15 +100,6 @@ namespace CourseLab
 					glBindTexture(GL_TEXTURE_2D, textures[i].id);
 				}
 			}
-			/*else 
-			{
-				glActiveTexture(GL_TEXTURE0);
-				glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse1"), 0);
-				glUniform1i(glGetUniformLocation(shaderID, "texture_specular1"), 0);
-				glUniform1i(glGetUniformLocation(shaderID, "texture_normal1"), 0);
-				glUniform1i(glGetUniformLocation(shaderID, "texture_height1"), 0);
-				glBindTexture(GL_TEXTURE_2D, 1);
-			}*/
 
 			Bind();
 			glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -168,14 +169,18 @@ namespace CourseLab
 	public:
 		struct BoneInfo {
 			glm::mat4 offset;
-			glm::mat4 transform;
+			glm::mat4 animPoseTransform;
+			BoneInfo() {
+				offset = glm::mat4(0.0f);
+				animPoseTransform = glm::mat4(0.0f);
+			}
 		};
 		struct VertBoneData {
-			GLuint IDs[4];
-			GLfloat weights[4];
+			GLint IDs[4] = {0,0,0,0};
+			GLfloat weights[4] = { 0.0f,0.0f,0.0f,0.0f };
 
-			void Add(GLuint boneID, GLfloat weight) {
-				for (GLuint i = 0; i < 4; i++) {
+			void Add(GLint boneID, GLfloat weight) {
+				for (int i = 0; i < 4; i++) {
 					if (weights[i] == 0.0) {
 						IDs[i] = boneID;
 						weights[i] = weight;
@@ -188,93 +193,79 @@ namespace CourseLab
 		std::string m_FilePath;
 		std::vector<ModelMesh*> m_Meshes;
 		std::vector<ModelMesh::Texture> m_TextLoaded;
+		const float& m_time;
 
 		std::vector<BoneInfo> m_BonesInfo;
-		std::map<std::string, GLuint> m_BoneMap;
+		std::map<std::string, GLint> m_BoneMap;
 		GLuint m_NumBones;
 
 		glm::mat4 m_GlobInvTransform;
 
-		const aiScene* scene;
-
-		//std::vector<
+		const aiScene* m_scene;
+		const aiAnimation* m_Animation;
 	public:
-		Model(const std::string& path)
+		Model(const std::string& path, float& time) : m_time(time)
 		{
 			Assimp::Importer importer;
 			
-			importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+			importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
 
-			scene = importer.GetOrphanedScene();
-			if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+			m_scene = importer.GetOrphanedScene();
+			if (!m_scene || m_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !m_scene->mRootNode)
 			{
 				std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
 				throw new std::exception("Loading model error");
 			}
-
-			m_GlobInvTransform = aiMatrix4x4ToGlm((scene->mRootNode->mTransformation).Inverse());
-
 			std::cout << importer.GetErrorString() << std::endl;
 
+			m_GlobInvTransform = glm::inverse(mat4_cast(m_scene->mRootNode->mTransformation));
+
+			if (m_scene->HasAnimations()) {
+				m_Animation = m_scene->mAnimations[0];
+			}
+			
 			m_FilePath = path.substr(0, path.find_last_of('/'));
 
-			processNode(scene->mRootNode, scene);
-
+			processNode(m_scene->mRootNode, m_scene);
 		};
 
 		~Model() {};
 
 		void Draw(GLuint shaderID, glm::mat4 transform) override
 		{ 
-			/*std::vector<glm::mat4> boneTransforms;
-			BoneTransform(glfwGetTime(), boneTransforms);
+			std::vector<glm::mat4> boneTransforms;
+			BoneTransform(m_time, boneTransforms);
 
-			GLCall(auto m_boneLocation = glGetUniformLocation(shaderID, "uBones"));
-			for (GLuint i = 0; i < boneTransforms.size(); i++) {
-				GLCall(glUniformMatrix4fv(m_boneLocation + i, 1, GL_TRUE, glm::value_ptr(boneTransforms[0])));
-			}*/
+			GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderID, "uBones[0]"), boneTransforms.size(), GL_FALSE, glm::value_ptr(boneTransforms[0]))); 
+
 			GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderID, "uTransform"), 1, GL_FALSE, glm::value_ptr(transform)));
 			GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderID, "uModel"), 1, GL_FALSE, glm::value_ptr( GetTransform() )));
 
-			for (GLuint i = 0; i < m_Meshes.size(); i++)
+			for (GLint i = 0; i < m_Meshes.size(); i++)
 				m_Meshes[i]->Draw(shaderID);
-			/*
-			for (auto& mesh : meshes) 
-			{
-				mesh->Bind();
-				GLCall(glUniform3f(glGetUniformLocation(shaderID, "uMaterial.ambient"),
-					tMesh.MeshMaterial.Ka.X, tMesh.MeshMaterial.Ka.Y, tMesh.MeshMaterial.Ka.Z));
-				GLCall(glUniform3f(glGetUniformLocation(shaderID, "uMaterial.diffuse"),
-					tMesh.MeshMaterial.Kd.X, tMesh.MeshMaterial.Kd.Y, tMesh.MeshMaterial.Kd.Z));
-				GLCall(glUniform3f(glGetUniformLocation(shaderID, "uMaterial.specular"),
-					tMesh.MeshMaterial.Ks.X, tMesh.MeshMaterial.Ks.Y, tMesh.MeshMaterial.Ks.Z));
-				GLCall(glUniform1f(glGetUniformLocation(shaderID, "uMaterial.shininess"), tMesh.MeshMaterial.Ns));
-
-				GLCall(glDrawElements(GL_TRIANGLES, mesh->GetMesh().Indices.size(), GL_UNSIGNED_INT, 0));
-			}*/
 		}
 
 		void BoneTransform(float TimeInSeconds, std::vector<glm::mat4>& Transforms)
 		{
 			glm::mat4 identity(1.0f);
-			if (!scene->HasAnimations()) return;
-			float TicksPerSecond = (float)(scene->mAnimations[0]->mTicksPerSecond != 0 ? scene->mAnimations[0]->mTicksPerSecond : 25.0f);
-			float TimeInTicks = TimeInSeconds * TicksPerSecond;
-			float AnimationTime = std::fmod(TimeInTicks, (float)scene->mAnimations[0]->mDuration);
 
-			readNodeHeirarchy(AnimationTime, scene->mRootNode, identity);
+			if (!m_scene->HasAnimations()) return;
+			float TicksPerSecond = (float)(m_Animation->mTicksPerSecond != 0 ? m_Animation->mTicksPerSecond : 25.0f);
+			float TimeInTicks = TimeInSeconds * TicksPerSecond;
+			float AnimationTime = std::fmod(TimeInTicks, (float)m_Animation->mDuration);
+
+			readNodeHeirarchy(AnimationTime, m_scene->mRootNode, identity);
 
 			Transforms.resize(m_NumBones);
 
 			for (GLuint i = 0; i < m_NumBones; i++) {
-				Transforms[i] = m_BonesInfo[i].transform;
+				Transforms[i] = m_BonesInfo[i].animPoseTransform;
 			}
 		}
 	private:
-
 		const aiNodeAnim* findNodeAnim(const aiAnimation* pAnimation, const std::string& NodeName)
 		{
-			for (GLuint i = 0; i < pAnimation->mNumChannels; i++) {
+			for (GLint i = 0; i < pAnimation->mNumChannels; i++) {
 				const aiNodeAnim* pNodeAnim = pAnimation->mChannels[i];
 
 				if (std::string(pNodeAnim->mNodeName.data) == NodeName) {
@@ -285,107 +276,105 @@ namespace CourseLab
 			return nullptr;
 		}
 
-		void readNodeHeirarchy(float AnimationTime, const aiNode* pNode, const glm::mat4& ParentTransform)
+		void readNodeHeirarchy(float AnimationTime, const aiNode* pNode, const glm::mat4& bindTransform)
 		{
 			std::string NodeName(pNode->mName.data);
 
-			const aiAnimation* pAnimation = scene->mAnimations[0];
+			glm::mat4 localBindTransform = mat4_cast(pNode->mTransformation);
 
-			glm::mat4 NodeTransformation(aiMatrix4x4ToGlm(pNode->mTransformation));
-
-			const aiNodeAnim* pNodeAnim = findNodeAnim(pAnimation, NodeName);
+			const aiNodeAnim* pNodeAnim = findNodeAnim(m_Animation, NodeName);
 
 			if (pNodeAnim) {
-				glm::vec3 vScale;
+				glm::vec3 vScale(0.0f);
 				InterpolateScale(vScale, AnimationTime, pNodeAnim);
-				glm::mat4 scale = glm::scale(scale,vScale);
+				glm::mat4 scale = glm::scale(glm::mat4(1.0f),vScale);
 
-
-				aiQuaternion quat;
+				glm::quat quat;
 				InterpolateRot(quat, AnimationTime, pNodeAnim);
-				glm::mat4 rot = aiMatrix4x4ToGlm(aiMatrix4x4(quat.GetMatrix()));
-
+				glm::mat4 rot = glm::toMat4(quat);
 
 				glm::vec3 vPos;
 				InterpolatePos(vPos, AnimationTime, pNodeAnim);
-				glm::mat4 pos = glm::translate(pos, vPos);
+				glm::mat4 pos = glm::translate(glm::mat4(1.0f), vPos);
 
-				NodeTransformation = pos * rot * scale;
+				localBindTransform = pos * rot *  scale;
 			}
 
-			glm::mat4 GlobalTransformation = ParentTransform * NodeTransformation;
+			glm::mat4 currentPoseTransform = bindTransform * localBindTransform;
 
 			if (m_BoneMap.find(NodeName) != m_BoneMap.end()) {
-				GLuint BoneIndex = m_BoneMap[NodeName];
-				m_BonesInfo[BoneIndex].transform = m_GlobInvTransform * GlobalTransformation *
-					m_BonesInfo[BoneIndex].offset;
+				GLint BoneIndex = m_BoneMap[NodeName];
+				m_BonesInfo[BoneIndex].animPoseTransform =  m_GlobInvTransform * currentPoseTransform *m_BonesInfo[BoneIndex].offset;
 			}
 
-			for (GLuint i = 0; i < pNode->mNumChildren; i++) {
-				readNodeHeirarchy(AnimationTime, pNode->mChildren[i], GlobalTransformation);
+			for (GLint i = 0; i < pNode->mNumChildren; i++) {
+				readNodeHeirarchy(AnimationTime, pNode->mChildren[i], currentPoseTransform);
 			}
 		}
 
 		void InterpolateScale(glm::vec3& vec, float time, const aiNodeAnim* node) {
 
-			GLuint index;
 			for (GLuint i = 0; i < node->mNumScalingKeys - 1; i++) {
 				if (time < (float)node->mScalingKeys[i + 1].mTime) {
 					float delta = node->mScalingKeys[i + 1].mTime - node->mScalingKeys[i].mTime;
 					float factor = (time - node->mScalingKeys[i].mTime) / delta;
 
-					auto aiVec3 = node->mScalingKeys[i].mValue;
-					glm::vec3 vec1(aiVec3.x, aiVec3.y, aiVec3.z);
+					auto vec1 = vec3_cast(node->mScalingKeys[i].mValue);
 
-					aiVec3 = node->mScalingKeys[i + 1].mValue;
-					glm::vec3 vec2(aiVec3.x, aiVec3.y, aiVec3.z);
+					auto vec2 = vec3_cast(node->mScalingKeys[i + 1].mValue);
 
 					vec = glm::mix(vec1, vec2, factor);
+					return;
 				}
+				
 			}
+			vec = vec3_cast(node->mScalingKeys[0].mValue);
 		}
 		void InterpolatePos(glm::vec3& vec, float time, const aiNodeAnim* node) {
 
-			GLuint index;
 			for (GLuint i = 0; i < node->mNumPositionKeys - 1; i++) {
 				if (time < (float)node->mPositionKeys[i + 1].mTime) {
 					float delta = node->mPositionKeys[i + 1].mTime - node->mPositionKeys[i].mTime;
 					float factor = (time - node->mPositionKeys[i].mTime) / delta;
 
-					auto aiVec3 = node->mPositionKeys[i].mValue;
-					glm::vec3 vec1(aiVec3.x, aiVec3.y, aiVec3.z);
-
-					aiVec3 = node->mPositionKeys[i + 1].mValue;
-					glm::vec3 vec2(aiVec3.x, aiVec3.y, aiVec3.z);
+					auto vec1 = vec3_cast(node->mPositionKeys[i].mValue);
+					auto vec2 = vec3_cast(node->mPositionKeys[i + 1].mValue);
 
 					vec = glm::mix(vec1, vec2, factor);
+					return;
 				}
 			}
-		}
-		void InterpolateRot(aiQuaternion& quat, float time, const aiNodeAnim* node) {
+			vec = vec3_cast(node->mPositionKeys[0].mValue);
 
-			GLuint index;
+		}
+		void InterpolateRot(glm::quat& quat, float time, const aiNodeAnim* node) {
+
+
 			for (GLuint i = 0; i < node->mNumRotationKeys - 1; i++) {
 				if (time < (float)node->mRotationKeys[i + 1].mTime) {
 					float delta = node->mRotationKeys[i + 1].mTime - node->mRotationKeys[i].mTime;
 					float factor = (time - node->mRotationKeys[i].mTime) / delta;
 
-					auto aiQuat1 = node->mRotationKeys[i].mValue;
+					auto quat1 = quat_cast(node->mRotationKeys[i].mValue);
+					auto quat2 = quat_cast(node->mRotationKeys[i + 1].mValue);
 
-					auto aiQuat2 = node->mRotationKeys[i + 1].mValue;
-
-
-					aiQuaternion::Interpolate(quat, aiQuat1, aiQuat2, factor);
+					quat = glm::mix(quat1, quat2, factor);
+					return;
 				}
 			}
+			quat = quat_cast(node->mRotationKeys[0].mValue);
+
 		}
 
 		void processNode(aiNode* node, const aiScene* scene)
 		{
+
 			for (GLuint i = 0; i < node->mNumMeshes; i++) 
 			{
-				aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-				m_Meshes.push_back(processMesh(mesh, scene, m_Meshes.size()));
+				GLuint meshIndx = node->mMeshes[i];
+				
+				aiMesh* mesh = scene->mMeshes[meshIndx];
+				m_Meshes.push_back(processMesh(mesh, scene, meshIndx));
 
 			}
 
@@ -395,18 +384,11 @@ namespace CourseLab
 			}
 		}
 
-		inline glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4& from)
-		{
-			glm::mat4 to;
+		static inline glm::vec3 vec3_cast(const aiVector3D& v) { return glm::vec3(v.x, v.y, v.z); }
+		static inline glm::vec2 vec2_cast(const aiVector3D& v) { return glm::vec2(v.x, v.y); } 
+		static inline glm::quat quat_cast(const aiQuaternion& q) { return glm::quat(q.w, q.x, q.y, q.z); }
+		static inline glm::mat4 mat4_cast(const aiMatrix4x4& m) { return glm::transpose( glm::make_mat4(&m.a1)); }
 
-
-			to[0][0] = (GLfloat)from.a1; to[0][1] = (GLfloat)from.b1;  to[0][2] = (GLfloat)from.c1; to[0][3] = (GLfloat)from.d1;
-			to[1][0] = (GLfloat)from.a2; to[1][1] = (GLfloat)from.b2;  to[1][2] = (GLfloat)from.c2; to[1][3] = (GLfloat)from.d2;
-			to[2][0] = (GLfloat)from.a3; to[2][1] = (GLfloat)from.b3;  to[2][2] = (GLfloat)from.c3; to[2][3] = (GLfloat)from.d3;
-			to[3][0] = (GLfloat)from.a4; to[3][1] = (GLfloat)from.b4;  to[3][2] = (GLfloat)from.c4; to[3][3] = (GLfloat)from.d4;
-
-			return to;
-		}
 
 		ModelMesh* processMesh(aiMesh* mesh, const aiScene* scene, GLuint meshID)
 		{
@@ -414,7 +396,7 @@ namespace CourseLab
 			Bones.resize(mesh->mNumVertices);
 			if (mesh->HasBones()) {
 				for (int j = 0; j < mesh->mNumBones; j++) {
-					GLuint boneID = 0;
+					GLint boneID = 0;
 					std::string boneName(mesh->mBones[j]->mName.data);
 
 					if (m_BoneMap.find(boneName) == m_BoneMap.end()) {
@@ -422,24 +404,23 @@ namespace CourseLab
 						m_NumBones++;
 						BoneInfo bi;
 						m_BonesInfo.push_back(bi);
+
+						m_BonesInfo[boneID].offset = mat4_cast(mesh->mBones[j]->mOffsetMatrix);
+						m_BoneMap[boneName] = boneID;
 					}
 					else {
 						boneID = m_BoneMap[boneName];
 					}
 
-					m_BoneMap[boneName] = boneID;
-					m_BonesInfo[boneID].offset = aiMatrix4x4ToGlm(mesh->mBones[j]->mOffsetMatrix);
-
 					for (int k = 0; k < mesh->mBones[j]->mNumWeights; k++) {
-						GLuint vertID = mesh->mFaces[0].mIndices[0]
-							+ mesh->mBones[j]->mWeights[k].mVertexId;
+						GLint vertID = mesh->mFaces[0].mIndices[0] +
+							mesh->mBones[j]->mWeights[k].mVertexId;
 						GLfloat weight = mesh->mBones[j]->mWeights[k].mWeight;
 
 						Bones[vertID].Add(boneID, weight);
 					}
 				}
 			}
-
 
 			std::vector<ModelMesh::Vertex> vertices;
 			std::vector<unsigned int> indices;
@@ -482,19 +463,18 @@ namespace CourseLab
 					vertex.Bitangent = vector;
 				}
 
-				if (mesh->HasBones()) 
+				if (mesh->HasBones())
 				{
-					{
-						glm::ivec4 vec;
 
-						vec.x = Bones[i].IDs[0];
-						vec.y = Bones[i].IDs[1];
-						vec.z = Bones[i].IDs[2];
-						vec.w = Bones[i].IDs[3];
-						vertex.BoneIDs = vec;
-					}
+					glm::ivec4 uvec;
+
+					uvec.x = Bones[i].IDs[0];
+					uvec.y = Bones[i].IDs[1];
+					uvec.z = Bones[i].IDs[2];
+					uvec.w = Bones[i].IDs[3];
+					vertex.BoneIDs = uvec;
+					
 					glm::vec4 vec;
-
 					vec.x = Bones[i].weights[0];
 					vec.y = Bones[i].weights[1];
 					vec.z = Bones[i].weights[2];
@@ -502,7 +482,6 @@ namespace CourseLab
 
 					vertex.Weights = vec;
 				}
-
 
 				vertices.push_back(vertex);
 			}
@@ -522,10 +501,10 @@ namespace CourseLab
 			std::vector<ModelMesh::Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-			std::vector<ModelMesh::Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+			std::vector<ModelMesh::Texture> normalMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_normal");
 			textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-			std::vector<ModelMesh::Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+			std::vector<ModelMesh::Texture> heightMaps = loadMaterialTextures(material,   aiTextureType_HEIGHT, "texture_height");
 			textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
 			return new ModelMesh(vertices, indices, textures);
@@ -606,24 +585,6 @@ namespace CourseLab
 
 	};
 
-	/*class AnimatedModel : public Model 
-	{
-	public:
-		struct Joint 
-		{
-			int index;
-			std::string name;
-			std::vector<Joint> children;
-
-		};
-	private:
-
-	public:
-		AnimatedModel(const std::string& path) :Model(path) {
-
-		}
-	};*/
-
 	class Camera : public Object, virtual public Transform
 	{
 	private:
@@ -665,7 +626,7 @@ namespace CourseLab
 			GLint width, height;
 			window->GetSize(width, height);
 
-			return glm::perspectiveFov(m_fov, (float)width, (float)height, m_zNear, m_zFar);
+			return glm::perspective(m_fov, (float)width/ (float)height, m_zNear, m_zFar);
 		}
 
 		glm::mat4 GetCamMatrix() {

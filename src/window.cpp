@@ -29,6 +29,8 @@ namespace CourseLab
 
 		GLCall(glViewport(0, 0, width, height));
 		GLCall(glEnable(GL_DEPTH_TEST));
+		GLCall(glEnable(GL_DEBUG_OUTPUT));
+		GLCall(glDebugMessageCallback(gl_callback, 0));
 	}
 
 	AppWindow::~AppWindow() 
