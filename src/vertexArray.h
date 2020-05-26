@@ -25,5 +25,8 @@ namespace CourseLab
 		void ActivateLayout();
 		void Bind() const;
 		void Unbind() const;
+
+		VertexArray(const VertexArray&) = delete;
+		const VertexArray& operator=(const VertexArray&) = delete;
 	};
 }

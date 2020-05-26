@@ -2,11 +2,14 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <stb_image.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_interpolation.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -14,11 +17,13 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include <map>
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 #define ASSERT(x) if (!(x)) __debugbreak();
 
@@ -27,6 +32,14 @@
 #else
 #define GLCall(x) x
 #endif
+
+#ifdef DEBUG
+#define LOG(x) { std::cout << x << std::endl; }
+#else
+#define LOG(x)
+#endif
+
+
 
 static void GLClearError() 
 {

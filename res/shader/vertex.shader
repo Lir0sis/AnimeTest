@@ -10,7 +10,7 @@ layout(location = 4) in vec3 aBiTangents;
 layout(location = 5) in ivec4 aBoneIDs;
 layout(location = 6) in vec4 aWeights;
 
-uniform mat4 uModel;
+uniform mat4 uRoot;
 uniform mat4 uTransform;
 uniform mat4 uBones[MAX_BONES];
 
@@ -19,21 +19,21 @@ out vec3 Normal;
 out vec2 TexCoords;
 
 void main()
-{	
+{
 	mat4 BoneTransform = (uBones[aBoneIDs[0]] * aWeights[0]);
 	BoneTransform += (uBones[aBoneIDs[1]] * aWeights[1]);
 	BoneTransform += (uBones[aBoneIDs[2]] * aWeights[2]);
 	BoneTransform += (uBones[aBoneIDs[3]] * aWeights[3]);
-	
+
 	vec4 posL = BoneTransform * vec4(aPos, 1);
 	vec4 normalL = BoneTransform * vec4(aNormal, 0);
 	
-	gl_Position = uTransform * uModel * posL;
+	gl_Position = uTransform * uRoot * posL;
 
 	TexCoords = aTexture;
 
-	Normal = (uModel * normalL).xyz;
-	FragPos = (uModel * posL).xyz;
+	Normal = (uRoot * normalL).xyz;
+	FragPos = (uRoot * posL).xyz;
 
 
 }

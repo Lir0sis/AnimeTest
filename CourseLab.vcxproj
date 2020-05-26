@@ -172,7 +172,6 @@
     <None Include="lib\assimp-vc142-mt.exp" />
     <None Include="LICENSE" />
     <None Include="README.md" />
-    <None Include="res\shader\fragment2.shader" />
     <None Include="res\shader\fragment.shader" />
     <None Include="res\shader\vertex.shader" />
   </ItemGroup>
@@ -188,6 +187,14 @@
     <ClCompile Include="include\objLoader.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\buffer.cpp" />
+    <ClCompile Include="src\gui\gui.cpp" />
+    <ClCompile Include="src\objects\camera.cpp" />
+    <ClCompile Include="src\objects\interfaces.cpp" />
+    <ClCompile Include="src\objects\light.cpp" />
+    <ClCompile Include="src\objects\model.cpp" />
+    <ClCompile Include="src\objects\renderer.cpp" />
+    <ClCompile Include="src\objects\timeline.cpp" />
+    <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="src\vertexArray.cpp" />
@@ -287,11 +294,18 @@
     <ClInclude Include="include\imGui\imstb_textedit.h" />
     <ClInclude Include="include\imGui\imstb_truetype.h" />
     <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="src\animation\animation.h" />
     <ClInclude Include="src\buffer.h" />
     <ClInclude Include="src\callbacks.h" />
+    <ClInclude Include="src\gui\gui.h" />
+    <ClInclude Include="src\objects\camera.h" />
+    <ClInclude Include="src\objects\interfaces.h" />
+    <ClInclude Include="src\objects\light.h" />
+    <ClInclude Include="src\objects\renderer.h" />
+    <ClInclude Include="src\objects\timeline.h" />
     <ClInclude Include="src\renderer.h" />
     <ClInclude Include="src\scene.h" />
-    <ClInclude Include="src\objects.h" />
+    <ClInclude Include="src\objects\model.h" />
     <ClInclude Include="src\layout.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\vertexArray.h" />

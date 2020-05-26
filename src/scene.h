@@ -1,40 +1,39 @@
 #pragma once
 
 #include <../main.h>
-#include "objects.h"
+#include "objects/camera.h"
+#include "objects/light.h"
 
 namespace CourseLab 
 {
+	class Renderer;
+
 	class Scene 
 	{
 	private:
-		std::vector<Model*> objects;
-		Camera* activeCamera;
-		LightSource* lightSrc;
+		// duration in seconds
+		GLfloat m_duration; 
+
+		std::vector<Object*> objects;
+		Camera* m_sceneCamera;
+		LightSource* m_lightSrc;
+		Renderer* m_renderer;
 	public:
-		Scene(LightSource* light) : activeCamera(nullptr), lightSrc(light) {}
-		~Scene() {}
+		Scene(Renderer* r);
+		~Scene();
 
-		void AddObj(Model* obj) {
-			objects.push_back(obj);
+		void AddObj(const std::string& path);
+
+		inline Camera* GetCamera() {
+			return m_sceneCamera;
 		}
 
-		Camera* GetCamera() {
-			return activeCamera;
-		}
-
-		void SetCamera(Camera* cam) {
-			activeCamera = cam;
-		}
+		inline void SetCamera(Camera* cam) { m_sceneCamera = cam; }
+		inline void SetLight(LightSource* light) { m_lightSrc = light; }
 		
-		void DrawScene(GLuint shaderID) 
-		{
-			lightSrc->SendData(shaderID, activeCamera->Pos());
+		void Update();
 
-			for (auto& obj : objects) 
-			{
-				obj->Draw(shaderID, activeCamera->GetCamMatrix());
-			}
-		}
+		void DrawScene(GLuint shaderID);
+
 	};
 }

@@ -14,6 +14,8 @@ namespace CourseLab
 		if (!glWindow)
 			throw std::runtime_error("Failed to create window");
 
+		LOG("Created window")
+
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -31,11 +33,17 @@ namespace CourseLab
 		GLCall(glEnable(GL_DEPTH_TEST));
 		GLCall(glEnable(GL_DEBUG_OUTPUT));
 		GLCall(glDebugMessageCallback(gl_callback, 0));
+
+		GLCall(glPolygonMode(GL_FRONT, GL_FILL));
+		GLCall(glPolygonMode(GL_BACK, GL_LINE));
+		GLCall(glClearColor(0.7f, 0.7f, 0.8f, 1));
+
+		LOG("Sucessfully initialized window")
 	}
 
 	AppWindow::~AppWindow() 
 	{
-		GLCall(glfwTerminate());
+		glfwTerminate();
 	}
 	
 	int AppWindow::shouldClose() const

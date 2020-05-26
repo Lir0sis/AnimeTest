@@ -14,6 +14,9 @@ namespace CourseLab
 
 		void Bind() const;
 		void Unbind() const;
+
+		VertexBuffer(const VertexBuffer&) = delete;
+		const VertexBuffer& operator=(const VertexBuffer&) = delete;
 	};
 
 	class IndexBuffer
@@ -27,6 +30,9 @@ namespace CourseLab
 
 		void Bind() const;
 		void Unbind() const;
+
+		IndexBuffer(const IndexBuffer&) = delete;
+		const IndexBuffer& operator=(const IndexBuffer&) = delete;
 	};
 
 }

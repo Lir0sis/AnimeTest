@@ -14,11 +14,16 @@ namespace CourseLab
 
 	void ShaderProgram::CreateShaders(std::string& dirpath)
 	{
-		if (!m_ProgramID) { GLCall(m_ProgramID = glCreateProgram();) }
+		if (!m_ProgramID) { 
+			GLCall(m_ProgramID = glCreateProgram();)
+				LOG("Created Shader Program")
+		}
 
 		ShaderSource ss = ReadShader(path);
 		GLuint vertex = CompileShader(GL_VERTEX_SHADER, ss.vertexSrc),
 			fragment = CompileShader(GL_FRAGMENT_SHADER, ss.fragmentSrc);
+
+		LOG("Compiled Shaders")
 
 		GLCall(glAttachShader(m_ProgramID, vertex));
 		GLCall(glAttachShader(m_ProgramID, fragment));
@@ -32,7 +37,7 @@ namespace CourseLab
 			glGetProgramInfoLog(m_ProgramID, 512, NULL, infoLog);
 			std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 		}
-
+		LOG("Linked Shaders")
 		GLCall(glDeleteShader(vertex));
 		GLCall(glDeleteShader(fragment));
 
@@ -55,7 +60,7 @@ namespace CourseLab
 
 			//throw std::runtime_error("We've fucked up...");
 		}
-
+		
 		return shaderID;
 	}
 
