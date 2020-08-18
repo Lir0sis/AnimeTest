@@ -195,9 +195,6 @@
     <ClInclude Include="src\scene.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="include\stb_image.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -454,6 +451,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="src\objects\model.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imGui\ext\imfilebrowser.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

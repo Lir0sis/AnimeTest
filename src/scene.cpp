@@ -5,9 +5,9 @@
 
 namespace CourseLab
 {
-	Scene::Scene(Renderer* r) :
+	Scene::Scene(Renderer* r, GLfloat offset = 0.0f) :
 		m_sceneCamera(nullptr), m_lightSrc(nullptr), 
-		m_duration(60.0f), m_renderer(r) 
+		m_duration(60.0f), m_renderer(r), m_timeOffset(offset)
 	{
 		LOG("--- Obj --- Created Scene")
 	}

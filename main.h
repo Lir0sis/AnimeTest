@@ -10,6 +10,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_interpolation.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

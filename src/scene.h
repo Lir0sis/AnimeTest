@@ -7,19 +7,23 @@
 namespace CourseLab 
 {
 	class Renderer;
+	class Model;
 
 	class Scene 
 	{
-	private:
+	public:
 		// duration in seconds
 		GLfloat m_duration; 
+		GLfloat m_timeOffset;
 
-		std::vector<Object*> objects;
+	private:
+		std::vector<Model*> objects;
 		Camera* m_sceneCamera;
 		LightSource* m_lightSrc;
 		Renderer* m_renderer;
+
 	public:
-		Scene(Renderer* r);
+		Scene(Renderer* r, GLfloat offset);
 		~Scene();
 
 		void AddObj(const std::string& path);
@@ -35,5 +39,6 @@ namespace CourseLab
 
 		void DrawScene(GLuint shaderID);
 
+		friend class Gui;
 	};
 }

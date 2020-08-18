@@ -16,8 +16,22 @@ namespace CourseLab
 		if (m_isPlaying) 
 		{
 			m_timeStamp += m_fps * m_lastDelta * m_speedFactor;
-			if (m_timeStamp > m_duration * m_fps) m_timeStamp = 0.0f;
+			if (m_timeStamp  > m_duration * m_fps) 
+			{ 
+				if(m_isRepeating)
+				m_timeStamp = 0.0f; 
+				else
+				{
+					m_isPlaying = false;
+					m_timeStamp = m_duration * m_fps;
+				}
+			}
 		}
+		m_frameStamp = std::floor(m_timeStamp);
+	}
+
+	void TimeLine::synchroniseStamps() {
+		m_timeStamp = m_frameStamp;
 	}
 
 	GLfloat TimeLine::GetDelta()
@@ -36,11 +50,13 @@ namespace CourseLab
 		return elapsed.count();
 	}
 
-	TimeLine::TimeLine() : m_fps(s_fps == 0 ? 25.0f : s_fps) {
+	TimeLine::TimeLine() : m_fps(s_fps == 0 ? 24.0f : s_fps) {
 		m_lastDelta = 0.0f;
-		m_isPlaying = false;
-		m_duration = 30.0f;
-		m_timeStamp = 0.0f;
+
+		m_isPlaying = false; m_isRepeating = false;
+		
+		m_duration = 25.0f;
+		m_timeStamp = 0.0f; m_frameStamp = 0;
 		LOG("TimeLine created")
 	}
 	TimeLine::~TimeLine()

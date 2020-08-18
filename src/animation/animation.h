@@ -7,6 +7,7 @@
 namespace CourseLab
 {
 	class AnimationLoder;
+	class Gui;
 
 	class Joint {
 	public:
@@ -28,43 +29,41 @@ namespace CourseLab
 		std::vector<std::shared_ptr<Joint>> m_children;
 	
 		std::vector<VecKey> m_sKeys;
-		std::vector<VecKey> m_rKeys;
+		std::vector<QuatKey> m_rKeys;
 		std::vector<VecKey> m_pKeys;
 
-		glm::vec3 m_pos;
-		glm::vec3 m_rot;
-		glm::vec3 m_scale;
+		glm::mat4 m_transform;
 
 	public:
 
 		inline Joint(const std::string& name, GLint id, glm::mat4 transform, glm::mat4 offset, Joint* parent = nullptr)
 			: m_name(name), m_id(id), m_offset(offset), m_parent(parent)
 		{
-			decompose(transform, m_pos, m_rot, m_scale);
+			/*if (m_parent != nullptr) 
+				transform = m_parent->GetTransform() * transform;*/
+			m_transform = transform;//glm::inverse(offset);
 
-			m_sKeys.push_back({ 0.0f, m_scale });
-			m_rKeys.push_back({ 0.0f, m_rot });
-			m_pKeys.push_back({ 0.0f, m_pos });
+			m_sKeys.push_back({ 0.0f, glm::vec3(0.5f) });
+			m_rKeys.push_back({ 0.0f, glm::angleAxis(glm::radians(-45.0f),glm::vec3(1.0f,0.0f,0.0f)) });
+			/*m_pKeys.push_back({ 0.0f, glm::vec3(0.0f) });*/
 		}
 		inline ~Joint() {}
 
 		inline void AddChild(const std::shared_ptr<Joint>& child) { 
 			child->setParent(this);
-			m_children.push_back(child); }
+			m_children.push_back(child); 
+		}
 
-		void GetCurrentPoseArray(float time, glm::mat4& bindTransform, std::vector<glm::mat4>& poseTransforms, glm::mat4& InverseBindTransform) {
+		void GetCurrentPoseArray(float time, glm::mat4& bindTransform, 
+			std::vector<glm::mat4>& poseTransforms, glm::mat4& InverseBindTransform) 
+		{
 
 			glm::mat4 localBindTransform;
 
 			if (m_sKeys.size() == 0 && m_rKeys.size() == 0 && m_pKeys.size() == 0)
-				localBindTransform = GetTransform();
+				localBindTransform = m_transform;
 			else {
-
-				glm::mat4 scale = glm::scale(glm::mat4(1.0f), interpolateKey(m_sKeys, time));
-				glm::mat4 rot = glm::rotate(glm::mat4(1.0f), 0.0f, interpolateRotKey(m_rKeys, time));
-				glm::mat4 pos = glm::translate(glm::mat4(1.0f), interpolateKey(m_pKeys, time));
-
-				localBindTransform = pos * rot * scale;
+				localBindTransform = GetFrameTransform(time);
 			}
 			glm::mat4 poseBindTransform = bindTransform * localBindTransform;
 
@@ -74,76 +73,146 @@ namespace CourseLab
 				joint->GetCurrentPoseArray(time, poseBindTransform, poseTransforms, InverseBindTransform);
 			}
 		}
-		inline void SetTransform(glm::mat4& m) { decompose(m, m_pos, m_rot, m_scale); }
-		inline glm::mat4 GetTransform() 
-		{ 
-			return glm::translate(glm::mat4(1.0f), m_pos)
-				* glm::toMat4(glm::rotate(glm::angleAxis(0.0f, m_rot), 0.0f, glm::vec3(0.0f)))
-				* glm::scale(glm::mat4(1.0f), m_scale);
-		}
+		//inline void SetTransform(glm::mat4& m) { ; }
 
 		glm::mat4 GetFrameTransform(float time) {
-			glm::mat4 scale = glm::scale(glm::mat4(1.0f), interpolateKey(m_sKeys, time));
-			glm::mat4 rot = glm::rotate(glm::mat4(1.0f),0.0f, interpolateKey(m_rKeys, time));
-			glm::mat4 pos = glm::translate(glm::mat4(1.0f), interpolateKey(m_pKeys, time));
+			glm::mat4 scale = glm::scale(glm::mat4(1.0f), GetScaleVec(time));
+
+			glm::mat4 rot = glm::toMat4(GetRotQuat(time));//glm::eulerAngleXYZ(ypr.y, ypr.x, ypr.z);
+
+			glm::mat4 pos = glm::translate(glm::mat4(1.0f), GetPoseVec(time));
 			
 			return pos * rot * scale;
 		}
 
-		glm::vec3 GetPoseVec(float time) {
-			return interpolateKey(m_pKeys, time);
+		void setPoseVec(float time, glm::vec3& vec) {
+			for (size_t i = 0; i + 1 < m_pKeys.size(); i++) {
+				if (time < m_pKeys[i + 1].time) {
+					m_pKeys.insert(m_pKeys.begin() + i + 1, { time,vec });
+				}
+				else if (time > m_pKeys[m_pKeys.size() - 1].time)
+				{
+					m_pKeys.push_back({ time,vec });
+				}
+			}
 		}
-		glm::vec3 GetRotVec(float time) {
+		void setRotVec(float time, glm::vec3& vec) {
+			for (size_t i = 0; i + 1 < m_rKeys.size(); i++) {
+				if (time < m_rKeys[i + 1].time) {
+					m_rKeys.insert(m_rKeys.begin() + i + 1, { time, glm::angleAxis(0.0f,vec) });
+				}
+				else if (time > m_rKeys[m_rKeys.size() - 1].time)
+				{
+					m_rKeys.push_back({ time,vec });
+				}
+			}
+		}
+
+		void setScaleVec(float time, glm::vec3& vec) {
+			for (size_t i = 0; i + 1 < m_sKeys.size(); i++) {
+				if (time < m_sKeys[i + 1].time) {
+					__debugbreak();
+					m_sKeys.insert(m_sKeys.begin() + i + 1, { time,vec });
+				}
+				else if (time > m_sKeys[m_sKeys.size() - 1].time)
+				{
+					m_sKeys.push_back({ time,vec });
+				}
+			}
+		}
+
+		glm::vec3 GetPoseVec(float time) {
+			return interpolatePosKey(m_pKeys, time);
+		}
+		glm::quat GetRotQuat(float time) {
 			return interpolateRotKey(m_rKeys, time);
 		}
 		glm::vec3 GetScaleVec(float time) {
-			return interpolateKey(m_sKeys, time);
+			return interpolateScaleKey(m_sKeys, time);
 		}
 
+		inline glm::mat4 GetTransform()
+		{
+			return m_transform;
+		}
 	private:
-		void decompose(glm::mat4 m, glm::vec3& p, glm::vec3& r, glm::vec3& s) {
-
-			glm::vec3 scale;
-			glm::quat rot;
-			glm::vec3 pos;
-			glm::vec3 skew; //dummy
-			glm::vec4 perspective; //dummy
-
-			glm::decompose(m, scale, rot, pos, skew, perspective);
-
-			p = pos; r = glm::eulerAngles(rot); s = scale;
+		static glm::vec3 eulerAngles(const glm::quat& q) {
+			return glm::normalize(
+				  q * glm::vec3(0.0f, 1.0f, 0.0f)
+				+ q * glm::vec3(1.0f, 0.0f, 0.0f)
+				+ q * glm::vec3(0.0f, 0.0f, 1.0f)
+			);
 		}
 
 		void setParent(Joint* parent) {
 			this->m_parent = parent;
 		}
-		glm::vec3 interpolateKey(std::vector<VecKey>& keys, float time) {
-			for (GLint i = 0; i < keys.size() - 1; i++) {
+		glm::vec3 interpolatePosKey(std::vector<VecKey>& keys, float time) {
+			for (size_t i = 0; i + 1 < keys.size(); i++) {
 				if (time < keys[i + 1].time) {
 					float delta = keys[i + 1].time - keys[i].time;
 					float factor = (time - keys[i].time) / delta;
 
 					return glm::mix(keys[i].vector, keys[i + 1].vector, factor);
 				}
+				else if(time > keys[keys.size() - (size_t)1].time) {
+					return keys[keys.size() - (size_t)1].vector;
+				}
+				else if (time < keys[0].time) {
+					return keys[0].vector;
+				}
 			}
-			return keys[0].vector;
+			if (keys.size() == 1)
+				return keys[0].vector;
+			else
+				return glm::vec3(0.0f);
 		}
-		glm::vec3 interpolateRotKey(std::vector<VecKey>& keys, float time) {
-			for (GLint i = 0; i < keys.size() - 1; i++) {
+		glm::vec3 interpolateScaleKey(std::vector<VecKey>& keys, float time) {
+			for (size_t i = 0; i + 1 < keys.size() ; i++) {
 				if (time < keys[i + 1].time) {
 					float delta = keys[i + 1].time - keys[i].time;
 					float factor = (time - keys[i].time) / delta;
 
-					auto quat1 = glm::angleAxis(0.0f, keys[i].vector);
-					auto quat2 = glm::angleAxis(0.0f, keys[i + 1].vector);
-
-					return glm::eulerAngles(glm::slerp(quat1, quat2, factor));
+					return glm::mix(keys[i].vector, keys[i + 1].vector, factor);
+				}
+				else if (time > keys[keys.size() - (size_t)1].time) {
+					return keys[keys.size() - (size_t)1].vector;
+				}
+				else if (time < keys[0].time) {
+					return keys[0].vector;
 				}
 			}
-			return keys[0].vector;
+			if (keys.size() == 1)
+				return keys[0].vector;
+			else
+				return glm::vec3(1.0f);
+		}
+		glm::quat interpolateRotKey(std::vector<QuatKey>& keys, float time) {
+			for (size_t i = 0; i + 1 < keys.size(); i++) {
+				if (time < keys[i + 1].time) {
+					float delta = keys[i + 1].time - keys[i].time;
+					float factor = (time - keys[i].time) / delta;
+
+					auto quat1 = keys[i].quat;//glm::angleAxis(0.0f, keys[i].vector);
+					auto quat2 = keys[i + 1].quat;//glm::angleAxis(0.0f, keys[i + 1].vector);
+
+					return glm::slerp(quat1, quat2, factor);
+				}
+				else if (time > keys[keys.size() - (size_t)1].time) {
+					return keys[keys.size() - (size_t)1].quat;
+				}
+				else if (time < keys[0].time) {
+					return keys[0].quat;
+				}
+			}
+			if (keys.size() == 1)
+				return keys[0].quat;
+			else
+				return glm::vec3(0.0f);
 		}
 
 		friend class AnimationLoader;
+		friend class Gui;
 	};
 
 	class AnimationLoader {
@@ -151,14 +220,14 @@ namespace CourseLab
 		const aiScene* m_scene;
 		std::map<std::string, Bone> m_BoneMap;
 		float m_ticksPerSec = 0.0f;
-		float m_duration = 0.0f;
+		float m_duration = 0;
 	public:
 
 		inline AnimationLoader(const aiScene* scene) : m_scene(scene) {}
 		inline ~AnimationLoader() {}
-
+		//call this for loop( vmesto getCurrentFrame() )
 		inline float GetAnimTime(float time) {
-			float ticks = time * m_ticksPerSec;
+			float ticks = time;
 			return std::fmod(ticks, m_duration);
 		}
 		inline void SetBoneMap(std::map<std::string, Bone>& map) {
@@ -171,7 +240,12 @@ namespace CourseLab
 				auto anim = m_scene->mAnimations[id];
 
 				m_ticksPerSec = (float)(anim->mTicksPerSecond != 0 ? anim->mTicksPerSecond : 24.0f);
-				m_duration = anim->mDuration;
+				m_duration = anim->mDuration * m_ticksPerSec;
+				if (m_ticksPerSec * m_duration < 5)
+				{
+					m_ticksPerSec = 24.0f;
+					m_duration *= m_ticksPerSec;
+				}
 
 				setKeys(anim, root);
 			}
@@ -184,21 +258,22 @@ namespace CourseLab
 				if (std::string(channel->mNodeName.data) == joint->m_name) {
 
 					std::vector<Joint::VecKey> pKeys;
-					std::vector<Joint::VecKey> rKeys;
+					std::vector<Joint::QuatKey> rKeys;
 					std::vector<Joint::VecKey> sKeys;
 
 					for (GLuint j = 0; j < channel->mNumPositionKeys; j++) {
-						pKeys.push_back({ (float)channel->mPositionKeys[j].mTime,
+						pKeys.push_back({ (float)channel->mPositionKeys[j].mTime * m_ticksPerSec,
 							vec3_cast(channel->mPositionKeys[j].mValue) });
 					}
 
 					for (GLuint j = 0; j < channel->mNumRotationKeys; j++) {
-						rKeys.push_back({ (float)channel->mRotationKeys[j].mTime,
-							glm::eulerAngles(quat_cast(channel->mRotationKeys[j].mValue)) });
+
+						rKeys.push_back({ (float)channel->mRotationKeys[j].mTime * m_ticksPerSec,
+							eulerAngles(quat_cast(channel->mRotationKeys[j].mValue)) });
 					}
 
 					for (GLuint j = 0; j < channel->mNumScalingKeys; j++) {
-						sKeys.push_back({ (float)channel->mScalingKeys[j].mTime,
+						sKeys.push_back({ (float)channel->mScalingKeys[j].mTime * m_ticksPerSec,
 							vec3_cast(channel->mScalingKeys[j].mValue) });
 					}
 

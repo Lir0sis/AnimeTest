@@ -132,7 +132,7 @@ namespace CourseLab
 	void Model::GetBoneTransforms(float time, std::vector<glm::mat4>& out) {
 
 		glm::mat4 identity(1.0f);
-		m_root->GetCurrentPoseArray(m_aLoder->GetAnimTime(time), identity, out, m_InvBindTransform);
+		m_root->GetCurrentPoseArray(/*m_aLoder->GetAnimTime(*/time/*)*/, identity, out, m_InvBindTransform);
 	};
 
 	void Model::getAllBones(aiNode* start) {

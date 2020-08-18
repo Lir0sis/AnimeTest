@@ -18,6 +18,7 @@ namespace CourseLab
 
 		Camera* m_editor_cam;
 		Camera* m_activeCam;
+		std::shared_ptr<Scene> m_activeScene = nullptr;
 		
 		TimeLine* m_timeline;
 		std::shared_ptr<ShaderProgram> m_shader;
@@ -36,9 +37,18 @@ namespace CourseLab
 		inline GLfloat GetCurrentFrame() { return m_timeline->GetCurrentFrame(); }
 		inline bool ShouldStop() { return m_window->shouldClose(); }
 	private:
-		inline void MakeActiveCamera() {
-
+		inline void SwapCameras() {
+			static bool isEditing{ true };
+			if (isEditing) {
+				m_activeCam = m_activeScene->GetCamera();
+				isEditing = false;
+			}
+			else {
+				m_activeCam = m_editor_cam;
+				isEditing = true;
+			}
 		}
+		void setActiveScene();
 
 		Renderer();
 		~Renderer();

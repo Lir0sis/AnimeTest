@@ -6,9 +6,10 @@
 #include "../animation/animation.h"
 #include "interfaces.h"
 
-namespace CourseLab 
+namespace CourseLab
 {
 	class Renderer;
+	class Gui;
 
 	class ModelMesh
 	{
@@ -53,7 +54,7 @@ namespace CourseLab
 
 		void Draw(GLuint shaderID);
 	};
-	
+
 	class Model : public virtual Object
 	{
 	protected:
@@ -108,8 +109,9 @@ namespace CourseLab
 		ModelMesh* processMesh(aiMesh* mesh, const aiScene* scene);
 		std::vector<ModelMesh::Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 
-		public:
-			static GLuint TextureFromFile(const char* path, const std::string& directory, bool gamma);
+	public:
+		static GLuint TextureFromFile(const char* path, const std::string& directory, bool gamma);
 
+		friend class Gui;
 	};
 }

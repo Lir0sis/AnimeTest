@@ -20,10 +20,10 @@ namespace CourseLab
 		const void* userParam
 	) {
 
-		std::printf(
+		/*std::printf(
 			"OpenGL error: t{ 0x%x }, s{ 0x%x }, lvl{ 0x%x }\n\tmsg: %s \n",
 			type, source, severity, message
-		);
+		);*/
 
 	}
 }
