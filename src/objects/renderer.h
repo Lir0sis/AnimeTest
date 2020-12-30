@@ -53,7 +53,7 @@ namespace CourseLab
 		Renderer();
 		~Renderer();
 
-		friend class Gui;
+		//friend class Gui;
 		friend class Scene;
 		friend class Camera;
 	};
