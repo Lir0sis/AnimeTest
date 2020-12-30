@@ -1,5 +1,5 @@
 #include <../main.h>
-#include "src/objects/renderer.h"
+#include "objects/renderer.h"
 
 void processInput(GLFWwindow* window, CourseLab::Camera& cam, float time);
 

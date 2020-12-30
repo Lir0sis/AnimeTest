@@ -16,15 +16,15 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include <string>
-#include <vector>
-#include <set>
-#include <map>
+#include <c++/string>
+#include <c++/vector>
+#include <c++/set>
+#include <c++/map>
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <chrono>
+#include <c++/iostream>
+#include <c++/fstream>
+#include <c++/sstream>
+#include <c++/chrono>
 
 #define ASSERT(x) if (!(x)) __debugbreak();
 
