@@ -1,6 +1,9 @@
 [submodule "lib/assimp"]
 	path = lib/assimp
 	url = https://github.com/assimp/assimp
+[submodule "lib/assimp/contrib/zlib/contrib/minizip"]
+	path = lib/assimp/contrib/zlib/contrib/minizip
+	url = https://github.com/nmoinvaz/minizip
 [submodule "lib/glfw"]
 	path = lib/glfw
 	url = https://github.com/glfw/glfw
