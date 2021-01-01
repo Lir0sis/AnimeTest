@@ -1,9 +1,9 @@
 #pragma once
 
-#include <../main.h>
+#include <main.h>
 
 #include "interfaces.h"
-#include "../animation/animation.h"
+#include "animation/animation.h"
 //#include "renderer.h"
 
 namespace CourseLab

@@ -1,8 +1,8 @@
 #pragma once
 
 
-#include <../main.h>
-#include "../objects/interfaces.h"
+#include "main.h"
+#include "objects/interfaces.h"
 
 namespace CourseLab
 {
@@ -27,7 +27,7 @@ namespace CourseLab
 
 		Joint* m_parent;
 		std::vector<std::shared_ptr<Joint>> m_children;
-	
+
 		std::vector<VecKey> m_sKeys;
 		std::vector<QuatKey> m_rKeys;
 		std::vector<VecKey> m_pKeys;
@@ -39,7 +39,7 @@ namespace CourseLab
 		inline Joint(const std::string& name, GLint id, glm::mat4 transform, glm::mat4 offset, Joint* parent = nullptr)
 			: m_name(name), m_id(id), m_offset(offset), m_parent(parent)
 		{
-			/*if (m_parent != nullptr) 
+			/*if (m_parent != nullptr)
 				transform = m_parent->GetTransform() * transform;*/
 			m_transform = transform;//glm::inverse(offset);
 
@@ -49,13 +49,13 @@ namespace CourseLab
 		}
 		inline ~Joint() {}
 
-		inline void AddChild(const std::shared_ptr<Joint>& child) { 
+		inline void AddChild(const std::shared_ptr<Joint>& child) {
 			child->setParent(this);
-			m_children.push_back(child); 
+			m_children.push_back(child);
 		}
 
-		void GetCurrentPoseArray(float time, glm::mat4& bindTransform, 
-			std::vector<glm::mat4>& poseTransforms, glm::mat4& InverseBindTransform) 
+		void GetCurrentPoseArray(float time, glm::mat4& bindTransform,
+			std::vector<glm::mat4>& poseTransforms, glm::mat4& InverseBindTransform)
 		{
 
 			glm::mat4 localBindTransform;
@@ -81,7 +81,7 @@ namespace CourseLab
 			glm::mat4 rot = glm::toMat4(GetRotQuat(time));//glm::eulerAngleXYZ(ypr.y, ypr.x, ypr.z);
 
 			glm::mat4 pos = glm::translate(glm::mat4(1.0f), GetPoseVec(time));
-			
+
 			return pos * rot * scale;
 		}
 
@@ -111,7 +111,6 @@ namespace CourseLab
 		void setScaleVec(float time, glm::vec3& vec) {
 			for (size_t i = 0; i + 1 < m_sKeys.size(); i++) {
 				if (time < m_sKeys[i + 1].time) {
-					__debugbreak();
 					m_sKeys.insert(m_sKeys.begin() + i + 1, { time,vec });
 				}
 				else if (time > m_sKeys[m_sKeys.size() - 1].time)

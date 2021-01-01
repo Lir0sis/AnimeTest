@@ -1,30 +1,31 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <stb_image.h>
+#include <string>
+#include <vector>
+#include <set>
+#include <map>
+#include <memory>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <chrono>
+#include <exception>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/matrix_interpolation.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
-#include <glm/gtx/euler_angles.hpp>
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+#include "stb_image.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/quaternion.hpp"
+#include "glm/gtx/matrix_interpolation.hpp"
+#include "glm/gtx/matrix_decompose.hpp"
+#include "glm/gtx/euler_angles.hpp"
 
-#include <c++/string>
-#include <c++/vector>
-#include <c++/set>
-#include <c++/map>
-
-#include <c++/iostream>
-#include <c++/fstream>
-#include <c++/sstream>
-#include <c++/chrono>
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
 
 #define ASSERT(x) if (!(x)) __debugbreak();
 
@@ -42,12 +43,12 @@
 
 
 
-static void GLClearError() 
+static void GLClearError()
 {
 	while (glGetError() != GL_NO_ERROR);
 }
 
-static bool GLLogCall(const char* func, const char* file, int line) 
+static bool GLLogCall(const char* func, const char* file, int line)
 {
 	while (GLenum error = glGetError())
 	{

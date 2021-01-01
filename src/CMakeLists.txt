@@ -1,14 +1,22 @@
 add_executable(
-        AnimeTest
-        buffer.cpp
-        scene.cpp
-        shader.cpp
-        vertexArray.cpp
-        window.cpp
+	AnimeTest
+	main.cpp
+	buffer.cpp
+	scene.cpp
+	shader.cpp
+	vertexArray.cpp
+	window.cpp
+
+#	gui/gui.cpp
+
+	objects/camera.cpp
+	objects/interfaces.cpp
+	objects/light.cpp
+	objects/model.cpp
+	objects/renderer.cpp
+	objects/timeline.cpp
 )
 
-
-target_include_directories(AnimeTest PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
+target_include_directories(AnimeTest PRIVATE .)
 target_link_libraries(AnimeTest ${linked_lib})
-#camera.cpp interfaces.cpp light.cpp model.cpp renderer.cpp timeline.cpp
+

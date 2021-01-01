@@ -1,4 +1,3 @@
-
 #include "renderer.h"
 #include "model.h"
 
@@ -40,7 +39,7 @@ namespace CourseLab
 		m_scenes.push_back(scene);
 		m_activeScene = scene;
 
-		m_gui = std::make_shared<Gui>(this);
+		//m_gui = std::make_shared<Gui>(this);
 
 	}
 	Renderer* Renderer::Instance()
@@ -76,7 +75,7 @@ namespace CourseLab
 		if(m_activeScene)
 			m_activeScene->Update();
 
-		m_gui->Update();
+		//m_gui->Update();
 
 		glfwSwapBuffers(m_window->glWindow);
 	}

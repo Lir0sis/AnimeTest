@@ -1,9 +1,9 @@
 #pragma once
 
-#include <../main.h>
-#include "../layout.h"
-#include "../vertexArray.h"
-#include "../animation/animation.h"
+#include "main.h"
+#include "layout.h"
+#include "vertexArray.h"
+#include "animation/animation.h"
 #include "interfaces.h"
 
 namespace CourseLab

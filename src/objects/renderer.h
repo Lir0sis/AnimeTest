@@ -1,10 +1,10 @@
 #pragma once
-#include <../main.h>
+#include <main.h>
 
-#include "../window.h"
-#include "../scene.h"
-#include "../gui/gui.h"
-#include "../shader.h"
+#include "window.h"
+#include "scene.h"
+//#include "gui/gui.h"
+#include "shader.h"
 #include "camera.h"
 #include "timeline.h"
 
@@ -14,16 +14,16 @@ namespace CourseLab
 	private:
 		std::vector<std::shared_ptr<Scene>> m_scenes;
 		std::shared_ptr<AppWindow> m_window;
-		std::shared_ptr<Gui> m_gui;	
+		std::shared_ptr<Gui> m_gui;
 
 		Camera* m_editor_cam;
 		Camera* m_activeCam;
 		std::shared_ptr<Scene> m_activeScene = nullptr;
-		
+
 		TimeLine* m_timeline;
 		std::shared_ptr<ShaderProgram> m_shader;
 
-		
+
 	public:
 		Renderer(const Renderer&) = delete;
 		const Renderer& operator=(const Renderer&) = delete;

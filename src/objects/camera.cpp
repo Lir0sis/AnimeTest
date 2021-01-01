@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "renderer.h"
 
-namespace CourseLab 
+namespace CourseLab
 {
 	using vec = glm::vec3;
 	Camera::Camera(const std::string& name, Renderer* r, float fov = 45.0f) {
@@ -34,7 +34,7 @@ namespace CourseLab
 
 		GLfloat time = m_renderer->GetCurrentFrame()/m_renderer->m_timeline->GetFPS();
 
-		return glm::lookAt(vec(4.0f* std::sinf(time), 0.0f, 4.0f * std::cos(time)), m_Target, m_Up);
+		return glm::lookAt(vec(4.0f* std::isinf(time), 0.0f, 4.0f * std::cos(time)), m_Target, m_Up);
 	}
 
 	void Camera::SetFOV(float fov) {
@@ -62,8 +62,8 @@ namespace CourseLab
 
 		GLCall(glUniformMatrix4fv(
 			glGetUniformLocation(m_renderer->GetShaderID(), "uTransform"),
-			1, 
-			GL_FALSE, 
+			1,
+			GL_FALSE,
 			glm::value_ptr(GetCamMatrix()))
 		);
 	}

@@ -1,4 +1,3 @@
-
 #include "model.h"
 #include "renderer.h"
 
@@ -79,7 +78,7 @@ namespace CourseLab
 		if (!m_scene || m_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !m_scene->mRootNode)
 		{
 			std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
-			throw new std::exception("Loading model error");
+			throw std::runtime_error("Loading model error");
 		}
 		std::cout << importer.GetErrorString() << std::endl;
 		LOG("--- Obj --- Model imported scene (assimp)")
@@ -87,7 +86,7 @@ namespace CourseLab
 		m_FilePath = path.substr(0, path.find_last_of('/'));
 		m_aLoder = std::make_shared<AnimationLoader>(m_scene);
 
-		//m_BoneMap.insert(std::pair<std::string, Bone>(std::string("root"), {}));	
+		//m_BoneMap.insert(std::pair<std::string, Bone>(std::string("root"), {}));
 
 		auto* smth = searchModelRoot(m_scene->mRootNode);
 		m_root = LoadBones(smth);
@@ -113,15 +112,15 @@ namespace CourseLab
 		boneTransforms.resize(m_NumBones);
 		GetBoneTransforms(m_renderer->GetCurrentFrame(), boneTransforms);
 
-		GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderID, "uBones[0]"), 
+		GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderID, "uBones[0]"),
 			boneTransforms.size(), GL_FALSE, glm::value_ptr(boneTransforms[0])
 		));
 
-		GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderID, "uRoot"), 
+		GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderID, "uRoot"),
 			1, GL_FALSE, glm::value_ptr(m_root->GetFrameTransform(m_renderer->GetCurrentFrame()))
 		));
 
-		/*GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderID, "uTransform"), 
+		/*GLCall(glUniformMatrix4fv(glGetUniformLocation(shaderID, "uTransform"),
 			1, GL_FALSE, glm::value_ptr(m_renderer->GetActiveCamera()->GetCamMatrix())
 		));*/
 
@@ -219,7 +218,7 @@ namespace CourseLab
 
 			}
 
-			if(!out) 
+			if(!out)
 				out = searchModelRoot(child);
 			if(out)
 				break;
@@ -231,7 +230,7 @@ namespace CourseLab
 		std::shared_ptr<Joint> root;
 		std::string name(node->mName.data);
 		if (_boneMap.find(name) != _boneMap.end())
-			root = std::make_shared<Joint>(name, _boneMap[name].id, 
+			root = std::make_shared<Joint>(name, _boneMap[name].id,
 				mat4_cast(node->mTransformation), _boneMap[name].offset);
 		/*else
 			root = std::make_shared<Joint>(name, m_NumBones++, mat4_cast(node->mTransformation), glm::mat4(1.0f));*/

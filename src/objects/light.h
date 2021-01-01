@@ -1,7 +1,7 @@
 #pragma once
 
-#include <../main.h>
-#include "../animation/animation.h"
+#include <main.h>
+#include "animation/animation.h"
 #include "interfaces.h"
 #include "timeline.h"
 
