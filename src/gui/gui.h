@@ -1,12 +1,10 @@
 #pragma once
 
-#include <main.h>
-#include "../objects/renderer.h"
+#include "main.h"
+#include "objects/renderer.h"
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_opengl3.h>
-#include <imgui/imgui_impl_glfw.h>
-#include <imgui/ext/imfilebrowser.h>
+#include "imgui/imgui.h"
+#include "imfilebrowser/imfilebrowser.h"
 
 
 namespace CourseLab

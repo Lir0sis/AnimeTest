@@ -1,10 +1,13 @@
+#include "imgui/backends/imgui_impl_opengl3.h"
+#include "imgui/backends/imgui_impl_glfw.h"
 
 #include "gui.h"
-#include "../objects/renderer.h"
-#include "../animation/animation.h"
-#include "../objects/timeline.h"
-#include "../scene.h"
-#include "../objects/model.h"
+#include "objects/renderer.h"
+#include "animation/animation.h"
+#include "objects/timeline.h"
+#include "scene.h"
+#include "objects/model.h"
+
 
 namespace CourseLab
 {
@@ -37,13 +40,13 @@ namespace CourseLab
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		
+
 		ImGui::ShowDemoWindow();
 
 		if (ImGui::BeginMainMenuBar()) {
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Open")) 
+				if (ImGui::MenuItem("Open"))
 				{
 					//m_fileBrowser.Open();
 					m_renderer->m_activeScene->AddObj("C:/Users/Valentine/Desktop/models/thin matrix/model.dae");
@@ -68,7 +71,7 @@ namespace CourseLab
 		std::string name("Current time: " + std::to_string(m_renderer->GetCurrentFrame()));
 
 		drawScene();
-		
+
 
 		ImGui::Begin("Controls");
 		ImGui::Text(name.c_str());
@@ -92,19 +95,19 @@ namespace CourseLab
 		ImGui::Separator(); ImGui::Columns(1);
 
 		ImGui::DragFloat("Speed factor", &m_renderer->m_timeline->m_speedFactor, 0.01f, 0.1f, 3.0f);
-		
-		
+
+
 		static int choice = 0;
 		ImGui::Columns(3, "myColumn3", false);
 		ImGui::RadioButton("Position", &choice, 0); ImGui::NextColumn();
 		ImGui::RadioButton("Rotation", &choice, 1); ImGui::NextColumn();
 		ImGui::RadioButton("Scale", &choice, 2); ImGui::NextColumn();
 		ImGui::Separator(); ImGui::Columns(1);
-		
+
 		glm::vec3 slider(0.0f);
 		if (m_joint_id.joint != nullptr) {
 			if (choice == 0) {
-				
+
 				if (ImGui::SliderFloat("Pos: X", &slider.x, -20, 20) ||
 					ImGui::SliderFloat("Pos: Y", &slider.y, -20, 20) ||
 					ImGui::SliderFloat("Pos: Z", &slider.z, -20, 20)) {
@@ -134,7 +137,7 @@ namespace CourseLab
 		ImGui::Begin("TimeLine");
 		ImGui::SetNextItemWidth(-1);
 		if (ImGui::SliderInt("", &m_renderer->m_timeline->m_frameStamp, 0,
-			std::floor(m_renderer->m_timeline->m_duration * m_renderer->m_timeline->m_fps))) 
+			std::floor(m_renderer->m_timeline->m_duration * m_renderer->m_timeline->m_fps)))
 		{
 			m_renderer->m_timeline->synchroniseStamps();
 		}

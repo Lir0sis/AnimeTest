@@ -3,10 +3,11 @@
 
 #include "window.h"
 #include "scene.h"
-//#include "gui/gui.h"
+#include "gui/gui.h"
 #include "shader.h"
 #include "camera.h"
 #include "timeline.h"
+
 
 namespace CourseLab
 {
@@ -53,7 +54,7 @@ namespace CourseLab
 		Renderer();
 		~Renderer();
 
-		//friend class Gui;
+		friend class Gui;
 		friend class Scene;
 		friend class Camera;
 	};

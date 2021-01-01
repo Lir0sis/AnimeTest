@@ -13,3 +13,9 @@
 [submodule "lib/imgui"]
 	path = lib/imgui
 	url = git@github.com:tamaskenez/imgui-cmake.git
+[submodule "src/imgui"]
+	path = src/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "src/imfilebrowser"]
+	path = src/imfilebrowser
+	url = https://github.com/AirGuanZ/imgui-filebrowser
