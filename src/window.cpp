@@ -32,7 +32,7 @@ namespace CourseLab
 		GLCall(glViewport(0, 0, width, height));
 		GLCall(glEnable(GL_DEPTH_TEST));
 		GLCall(glEnable(GL_DEBUG_OUTPUT));
-		GLCall(glDebugMessageCallback(gl_callback, 0));
+		//GLCall(glDebugMessageCallback((GLDEBUGPROC)gl_callback, (const void*)0));
 
 		GLCall(glPolygonMode(GL_FRONT, GL_FILL));
 		GLCall(glPolygonMode(GL_BACK, GL_LINE));
