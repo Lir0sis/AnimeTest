@@ -25,7 +25,7 @@ add_executable(
 	imgui/backends/imgui_impl_opengl3.cpp
 )
 
-target_include_directories(AnimeTest PRIVATE .)
+target_include_directories(AnimeTest PRIVATE . imgui)
 target_link_libraries(AnimeTest ${linked_lib})
 
 set_property(TARGET AnimeTest PROPERTY CXX_STANDARD 20)
