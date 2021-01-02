@@ -23,7 +23,7 @@ namespace CourseLab
 		ImGui_ImplOpenGL3_Init("#version 330");
 
 		m_fileBrowser.SetTitle("Model Loading");
-		m_fileBrowser.SetTypeFilters({ ".obj", ".dae", ".*" });
+		m_fileBrowser.SetTypeFilters({ ".obj", ".dae", "." });
 
 		LOG("Initialized ImGUI IO and GLFW_Impl")
 	}
@@ -48,25 +48,24 @@ namespace CourseLab
 			{
 				if (ImGui::MenuItem("Open"))
 				{
-					//m_fileBrowser.Open();
-					m_renderer->m_activeScene->AddObj("C:/Users/Valentine/Desktop/models/thin matrix/model.dae");
+					m_fileBrowser.Open();
+					//m_renderer->m_activeScene->AddObj("C:/Users/Valentine/Desktop/models/thin matrix/model.dae");
 				}
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();
 		}
 
-		//m_fileBrowser.Display();
-		//if (m_fileBrowser.HasSelected()) {
-
-		//	if (m_renderer->m_activeScene != nullptr) {
-		//		//auto path = std::string(m_fileBrowser.GetSelected().u16string().c_str());
-		//		//m_renderer->m_activeScene->AddObj(path.c_str());
-		//		std::cout << m_fileBrowser.GetSelected().u8string().c_str() << std::endl;
-		//		m_renderer->m_activeScene->AddObj("C:/Users/Valentine/Desktop/models/thin matrix/model.dae");
-		//	}
-		//	m_fileBrowser.ClearSelected();
-		//}
+		m_fileBrowser.Display();
+		if (m_fileBrowser.HasSelected()) {
+		if (m_renderer->m_activeScene != nullptr) {
+				auto path = m_fileBrowser.GetSelected();
+				m_renderer->m_activeScene->AddObj(path.string());
+				std::cout << "PATH:" << m_fileBrowser.GetSelected().string() << std::endl;
+				//m_renderer->m_activeScene->AddObj("C:/Users/Valentine/Desktop/models/thin matrix/model.dae");
+			}
+			m_fileBrowser.ClearSelected();
+		}
 
 		std::string name("Current time: " + std::to_string(m_renderer->GetCurrentFrame()));
 
