@@ -1,0 +1,5 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.26/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.26/Modules/FindPackageMessage.cmake
+C:/Users/Valentyn/Desktop/Diploma/AnimeTest/lib/assimp/cmake-modules/FindRT.cmake
+C:/Users/Valentyn/Desktop/Diploma/AnimeTest/lib/assimp/code/CMakeLists.txt

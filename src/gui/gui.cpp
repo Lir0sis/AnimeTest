@@ -48,8 +48,9 @@ namespace CourseLab
 			{
 				if (ImGui::MenuItem("Open"))
 				{
+					m_fileBrowser.SetPwd("E:/Valik/models/");
 					m_fileBrowser.Open();
-					//m_renderer->m_activeScene->AddObj("C:/Users/Valentine/Desktop/models/thin matrix/model.dae");
+					//m_renderer->m_activeScene->AddObj("E:/Valik/models/thin matrix/model2.dae");
 				}
 				ImGui::EndMenu();
 			}
