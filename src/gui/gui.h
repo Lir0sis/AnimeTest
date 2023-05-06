@@ -3,7 +3,7 @@
 #include "main.h"
 #include "objects/renderer.h"
 
-#include "imgui/imgui.h"
+#include "imgui.h"
 #include "imfilebrowser/imfilebrowser.h"
 
 
