@@ -341,3 +341,6 @@ healthchecksdb
 
 # Cmake build dirs
 cmake-build-*
+./build/*
+
+
