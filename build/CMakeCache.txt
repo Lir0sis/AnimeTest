@@ -17,6 +17,9 @@
 //Android JNI IOSystem support is active
 ASSIMP_ANDROID_JNIIOSYSTEM:BOOL=OFF
 
+//Path for library output files
+ASSIMP_ARCHIVE_OUTPUT_DIRECTORY:STRING=C:/Users/Valentyn/Desktop/Diploma/AnimeTest/build/lib/assimp/lib
+
 //Enable AddressSanitizer.
 ASSIMP_ASAN:BOOL=OFF
 
@@ -92,6 +95,9 @@ ASSIMP_INSTALL:BOOL=ON
 //Install MSVC debug files.
 ASSIMP_INSTALL_PDB:BOOL=ON
 
+//Path for library output files
+ASSIMP_LIBRARY_OUTPUT_DIRECTORY:STRING=C:/Users/Valentyn/Desktop/Diploma/AnimeTest/build/lib/assimp/bin
+
 //Suffix to append to library names
 ASSIMP_LIBRARY_SUFFIX:STRING=
 
@@ -111,8 +117,14 @@ ASSIMP_PACKAGE_VERSION:STRING=0
 //Suppress rapidjson warning on MSVC (NOTE: breaks android build)
 ASSIMP_RAPIDJSON_NO_MEMBER_ITERATOR:BOOL=ON
 
+//Path for runtime output files
+ASSIMP_RUNTIME_OUTPUT_DIRECTORY:STRING=C:/Users/Valentyn/Desktop/Diploma/AnimeTest/build/lib/assimp/bin
+
 //Enable Undefined Behavior sanitizer.
 ASSIMP_UBSAN:BOOL=OFF
+
+//Treat all warnings as errors.
+ASSIMP_WARNINGS_AS_ERRORS:BOOL=ON
 
 //Value Computed by CMake
 AnimeTest_BINARY_DIR:STATIC=C:/Users/Valentyn/Desktop/Diploma/AnimeTest/build
@@ -394,11 +406,18 @@ GLFW_BUILD_EXAMPLES:BOOL=OFF
 //Build the GLFW test programs
 GLFW_BUILD_TESTS:BOOL=OFF
 
+//Build support for Win32
+GLFW_BUILD_WIN32:BOOL=ON
+
 //Generate installation target
 GLFW_INSTALL:BOOL=ON
 
 //Value Computed by CMake
 GLFW_IS_TOP_LEVEL:STATIC=OFF
+
+//Library type override for GLFW (SHARED, STATIC, OBJECT, or empty
+// to follow BUILD_SHARED_LIBS)
+GLFW_LIBRARY_TYPE:STRING=
 
 //Value Computed by CMake
 GLFW_SOURCE_DIR:STATIC=C:/Users/Valentyn/Desktop/Diploma/AnimeTest/lib/glfw
@@ -426,6 +445,9 @@ RT_LIBRARY:FILEPATH=RT_LIBRARY-NOTFOUND
 
 //Use MSVC runtime library DLL
 USE_MSVC_RUNTIME_LIBRARY_DLL:BOOL=ON
+
+//Link against the static runtime libraries.
+USE_STATIC_CRT:BOOL=OFF
 
 //Path to a file.
 ZLIB_INCLUDE_DIR:PATH=ZLIB_INCLUDE_DIR-NOTFOUND
@@ -588,7 +610,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MT
 CMAKE_MT-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=15
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=7
 //Platform information initialized
 CMAKE_PLATFORM_INFO_INITIALIZED:INTERNAL=1
 //noop for ranlib
@@ -638,6 +660,10 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 DOXYGEN_EXECUTABLE-ADVANCED:INTERNAL=1
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
+//GLFW pkg-config Libs.private
+GLFW_PKG_CONFIG_LIBS_PRIVATE:INTERNAL= -lgdi32
+//GLFW pkg-config Requires.private
+GLFW_PKG_CONFIG_REQUIRES_PRIVATE:INTERNAL=
 //Have function fseeko
 HAVE_FSEEKO:INTERNAL=
 //Result of TRY_COMPILE
